@@ -62,6 +62,7 @@ class RawData(pa.DataFrameModel):
 
     class Config:
         coerce = True
+        strict = "filter"
 
 
 class ParsedData(RawData):
@@ -90,7 +91,7 @@ class TrainingData(ParsedData):
     def validate_feature_correlations(cls, df: pd.DataFrame) -> bool:
         """Ensure key feature correlations with target remain strong"""
         corrs = df.corr()['target']
-        return all(corrs[['cp', 'exang', 'oldpeak']] > 0.2)  # These should be strongly correlated
+        return bool((corrs[['cp', 'exang', 'oldpeak']] > 0.2).all())
 
 
 DataSplits = typing.NamedTuple(
@@ -124,8 +125,6 @@ def get_features_and_target(dataset):
 @union.task(container_image=image, enable_deck=True)
 def train_model(training_set: DataFrame[TrainingData], random_state: int) -> RandomForestClassifier:
     print("training model")
-    print(training_set.corr()["target"][['cp', 'exang', 'oldpeak']])
-    print(all(training_set.corr()["target"][['cp', 'exang', 'oldpeak']] > 0.2))
     model = RandomForestClassifier(n_estimators=100, random_state=random_state)
     X, y = get_features_and_target(training_set)
     model.fit(X, y)
