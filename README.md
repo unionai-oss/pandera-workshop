@@ -1,1 +1,1 @@
-# pandera-workshop
+# Pandera Workshop
