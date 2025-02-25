@@ -1,0 +1,10 @@
+flytekitplugins-pandera
+matplotlib
+numpy
+pandera
+pandas
+pyarrow
+scikit-learn
+scipy
+seaborn
+union==0.1.148
